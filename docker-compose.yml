@@ -17,7 +17,7 @@ services:
       - "2181:2181"
 
   master:
-    image: jairamc/spark-kafka-streaming
+    image: miseyu/docker-spark-streaming
     hostname: master
     environment:
       SPARK_HOME: /usr/local/spark
@@ -30,28 +30,11 @@ services:
       - 6066:6066
     command: /usr/local/spark/bin/spark-class org.apache.spark.deploy.master.Master -h master
 
-  slave:
-    image: jairamc/spark-kafka-streaming
-    hostname: worker
-    depends_on:
-      - master
-    environment:
-      SPARK_HOME: /usr/local/spark
-      SPARK_CONF_DIR: /usr/local/spark/conf
-      SPARK_WORKER_CORES: 2
-      SPARK_WORKER_MEMORY: 1g
-      SPARK_WORKER_PORT: 8881
-      SPARK_WORKER_WEBUI_PORT: 8081
-      SPARK_PUBLIC_DNS: localhost
-    ports:
-      - 8081:8081
-    command: /usr/local/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://master:7077
-
   notebook:
-    image: jairamc/spark-notebook
+    image: miseyu/docker-spark-notebook
     environment:
       SPARK_OPTS: '--master=spark://master:7077'
-    command: jupyter notebook --ip=0.0.0.0
+    command: jupyter notebook --no-browser --ip=0.0.0.0 --allow-root --NotebookApp.token=
     ports:
       - 8888:8888
     volumes:
